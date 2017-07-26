@@ -2,6 +2,8 @@
 
 [House Prices: Advanced Regression Techniques](https://www.kaggle.com/c/house-prices-advanced-regression-techniques)
 
+> 最新加入了Stacking Ensemble技术。
+
 # 数据处理
 
 ## 缺失情况统计
@@ -33,6 +35,25 @@
 - ElasticNet
 - ElasticNetCV
 - **XGBRegressor**
+
+## Stacking
+
+### 第一层Base Estimators
+
+- from sklearn.linear_model import Ridge
+- from xgboost import XGBRegressor
+- from sklearn.ensemble import AdaBoostRegressor
+- from sklearn.ensemble import ExtraTreesRegressor
+- from sklearn.ensemble import RandomForestRegressor
+- from sklearn.ensemble import GradientBoostingRegressor
+
+将原始的数据分为5 KFold，拿出一个estimator，将5个Fold中4个做train，1个做test，得到的结果暂存。然后重复5遍，得到5个不同test的预测结果，拼凑成为一个该estimator关于原始数据的预测结果，shape为(m, 1)。这6个estimator可以生成6个不同的预测结果，shape为(m, 6)。
+
+### 第二层
+
+采用XGBRegressor，数据数据是第一层的结果，结果是最终的预测结果。**可以理解为，输入是不同模型的预测结果，输出是groud truth，第二层权衡不同模型的预测结果，然后综合调整，得到更好的结果，这也是stacking的精髓所在。**
+
+不过尝试了一些，效果没有明显提升。因素也有多方面吧，比如数据集不够大等等。
 
 ## Points
 
